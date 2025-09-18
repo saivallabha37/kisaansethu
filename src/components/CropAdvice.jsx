@@ -16,44 +16,30 @@ const CropAdvice = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyB9YZrzf6vr_oahWc5mGymFcfQYLaJmAd8',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [
-                  {
-                    text: `As an expert agricultural advisor for Indian farmers, provide detailed practical advice for this farmer profile: 
-Location: ${user.location || 'India'}, 
-Farm Size: ${user.farmSize || '1'} acres, 
-Soil Type: ${user.soilType || 'Mixed'}. 
-Query: ${query}. 
-Include specific recommendations for Indian farming conditions, seasonal considerations, local crop varieties, and cost-effective solutions. 
+      const response = await fetch('http://localhost:5000/api/crop-advice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `As an expert agricultural advisor for Indian farmers, provide detailed practical advice for this farmer profile:
+Location: ${user.location || 'India'},
+Farm Size: ${user.farmSize || '1'} acres,
+Soil Type: ${user.soilType || 'Mixed'}.
+Query: ${query}.
+Include specific recommendations for Indian farming conditions, seasonal considerations, local crop varieties, and cost-effective solutions.
 Format response in clear, actionable points.`
-                  }
-                ]
-              }
-            ]
-          }),
-        }
-      );
+        })
+      });
 
       const data = await response.json();
 
       if (data.candidates && data.candidates[0].content.parts[0].text) {
         setAdvice(data.candidates[0].content.parts[0].text);
       } else {
-        setAdvice('Sorry, there was an error getting crop advice. Please try again.');
+        setAdvice(t('errorAdvice'));
       }
     } catch (error) {
       console.error('Error getting crop advice:', error);
-      setAdvice('Sorry, there was an error getting crop advice. Please try again.');
+      setAdvice(t('errorAdvice'));
     }
     setLoading(false);
   };
@@ -68,16 +54,20 @@ Format response in clear, actionable points.`
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
       <div className="flex items-center mb-6">
         <Sprout className="h-8 w-8 text-primary-600 mr-3" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('aiCropAdvice')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {t('aiCropAdvice')}
+          </h1>
           <p className="text-gray-600 dark:text-gray-300">
             {t('personalizedRecommendations')}
           </p>
         </div>
       </div>
 
+      {/* Form */}
       <div className="card">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -92,7 +82,7 @@ Format response in clear, actionable points.`
               required
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -120,7 +110,9 @@ Format response in clear, actionable points.`
               onClick={() => setQuery(question)}
               className="text-left p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             >
-              <span className="text-sm text-gray-700 dark:text-gray-300">{question}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {question}
+              </span>
             </button>
           ))}
         </div>
