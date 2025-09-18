@@ -16,23 +16,38 @@ const CropAdvice = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('https://builder.empromptu.ai/api_tools/rapid_research', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 78c603dd15a83e48927e7dc52b2a8a6c',
-          'X-Generated-App-ID': 'fb966449-837b-4a1b-b874-1afcdcab3e35',
-          'X-Usage-Key': 'bea07626d89ebd2a9ab76e0ada0b62ad'
-        },
-        body: JSON.stringify({
-          created_object_name: 'crop_advice_response',
-          goal: `As an expert agricultural advisor for Indian farmers, provide detailed practical advice for this farmer profile: Location: ${user.location || 'India'}, Farm Size: ${user.farmSize || '1'} acres, Soil Type: ${user.soilType || 'Mixed'}. Query: ${query}. Include specific recommendations for Indian farming conditions, seasonal considerations, local crop varieties, and cost-effective solutions. Format response in clear, actionable points.`
-        })
-      });
+      const response = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyB9YZrzf6vr_oahWc5mGymFcfQYLaJmAd8',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  {
+                    text: `As an expert agricultural advisor for Indian farmers, provide detailed practical advice for this farmer profile: 
+Location: ${user.location || 'India'}, 
+Farm Size: ${user.farmSize || '1'} acres, 
+Soil Type: ${user.soilType || 'Mixed'}. 
+Query: ${query}. 
+Include specific recommendations for Indian farming conditions, seasonal considerations, local crop varieties, and cost-effective solutions. 
+Format response in clear, actionable points.`
+                  }
+                ]
+              }
+            ]
+          }),
+        }
+      );
 
       const data = await response.json();
-      if (data.value) {
-        setAdvice(data.value);
+
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        setAdvice(data.candidates[0].content.parts[0].text);
       } else {
         setAdvice('Sorry, there was an error getting crop advice. Please try again.');
       }
