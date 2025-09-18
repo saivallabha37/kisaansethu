@@ -19,26 +19,47 @@ const Dashboard = () => {
 
   const fetchWeatherData = async () => {
     try {
-      const response = await fetch('https://builder.empromptu.ai/api_tools/rapid_research', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 78c603dd15a83e48927e7dc52b2a8a6c',
-          'X-Generated-App-ID': 'fb966449-837b-4a1b-b874-1afcdcab3e35',
-          'X-Usage-Key': 'bea07626d89ebd2a9ab76e0ada0b62ad'
-        },
-        body: JSON.stringify({
-          created_object_name: 'weather_data',
-          goal: `Get current weather conditions and 3-day forecast for ${user.location}, India including temperature, humidity, rainfall prediction, and farming recommendations`
-        })
-      });
-      
-      const data = await response.json();
-      if (data.value) {
-        setWeatherData(data.value);
+      // 1) Geocode the user's location to lat/lon (no API key required)
+      const geoRes = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+          user.location || 'Hyderabad'
+        )}&count=1&language=en&format=json`
+      );
+      const geoJson = await geoRes.json();
+      const place = geoJson?.results?.[0];
+      if (!place) {
+        throw new Error('Could not resolve location to coordinates');
       }
+
+      const { latitude, longitude, name: placeName, admin1, country } = place;
+
+      // 2) Fetch current weather + 3 day daily forecast
+      const wxRes = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`
+      );
+      const wx = await wxRes.json();
+
+      const formatted = {
+        locationLabel: [placeName, admin1, country].filter(Boolean).join(', '),
+        current: {
+          temperatureC: wx?.current_weather?.temperature ?? null,
+          windSpeedKph: wx?.current_weather?.windspeed ?? null,
+          windDirectionDeg: wx?.current_weather?.winddirection ?? null,
+          weatherCode: wx?.current_weather?.weathercode ?? null,
+          time: wx?.current_weather?.time ?? null
+        },
+        daily: {
+          dates: wx?.daily?.time ?? [],
+          maxC: wx?.daily?.temperature_2m_max ?? [],
+          minC: wx?.daily?.temperature_2m_min ?? [],
+          precipitationMm: wx?.daily?.precipitation_sum ?? []
+        }
+      };
+
+      setWeatherData(formatted);
     } catch (error) {
       console.error('Error fetching weather data:', error);
+      setWeatherData({ error: true });
     }
   };
 
@@ -123,9 +144,28 @@ const Dashboard = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('weatherUpdate')}</h2>
           </div>
           {weatherData ? (
-            <div className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line">
-              {weatherData.substring(0, 300)}...
-            </div>
+            weatherData.error ? (
+              <div className="text-sm text-red-600 dark:text-red-400">Failed to load weather. Please try again later.</div>
+            ) : (
+              <div className="text-sm text-gray-700 dark:text-gray-200">
+                <div className="mb-3">
+                  <p className="font-medium">{weatherData.locationLabel}</p>
+                  {weatherData.current.temperatureC !== null && (
+                    <p>Now: <span className="font-semibold">{Math.round(weatherData.current.temperatureC)}°C</span> • Wind {Math.round(weatherData.current.windSpeedKph)} km/h</p>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {weatherData.daily.dates.slice(0, 3).map((dateStr, idx) => (
+                    <div key={dateStr} className="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                      <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">{new Date(dateStr).toLocaleDateString()}</p>
+                      <p className="text-sm">Max {Math.round(weatherData.daily.maxC[idx])}°C</p>
+                      <p className="text-sm">Min {Math.round(weatherData.daily.minC[idx])}°C</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">Rain {Math.round(weatherData.daily.precipitationMm[idx])} mm</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
           ) : (
             <div className="animate-pulse">
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
