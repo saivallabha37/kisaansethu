@@ -43,26 +43,30 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://builder.empromptu.ai/api_tools/rapid_research', {
+      const response = await fetch('http://localhost:5000/api/crop-advice', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 78c603dd15a83e48927e7dc52b2a8a6c',
-          'X-Generated-App-ID': 'fb966449-837b-4a1b-b874-1afcdcab3e35',
-          'X-Usage-Key': 'bea07626d89ebd2a9ab76e0ada0b62ad'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          created_object_name: 'farming_assistant_response',
-          goal: `You are Kisaan Sethu AI, a helpful farming assistant for Indian farmers. The user is ${user?.name || 'Farmer'} from ${user?.location || 'India'} with ${user?.farmSize || '1'} acres of ${user?.soilType || 'mixed'} soil. Provide practical, actionable advice in a conversational tone. Consider Indian agricultural context, local conditions, seasonal factors, and cost-effective solutions. User question: ${currentMessage}`
+          prompt: `You are Kisaan Sethu AI, a helpful farming assistant for Indian farmers. 
+          The user is ${user?.name || 'Farmer'} from ${user?.location || 'India'} 
+          with ${user?.farmSize || '1'} acres of ${user?.soilType || 'mixed'} soil. 
+          Provide practical, actionable advice in a conversational tone. 
+          Consider Indian agricultural context, local conditions, seasonal factors, 
+          and cost-effective solutions. User question: ${currentMessage}`
         })
       });
 
       const data = await response.json();
-      
+
+      let botReply = 'Sorry, I encountered an error. Please try again.';
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        botReply = data.candidates[0].content.parts[0].text;
+      }
+
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: data.value || 'Sorry, I encountered an error. Please try again.',
+        content: botReply,
         timestamp: new Date()
       };
 
@@ -95,9 +99,7 @@ const Chatbot = () => {
         <MessageCircle className="h-8 w-8 text-indigo-600 mr-3" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('aiFarmingAssistant')}</h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            {t('instantHelp')}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300">{t('instantHelp')}</p>
         </div>
       </div>
 
@@ -112,9 +114,7 @@ const Chatbot = () => {
               <div className={`flex max-w-xs lg:max-w-md ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 <div className={`flex-shrink-0 ${message.type === 'user' ? 'ml-2' : 'mr-2'}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.type === 'user' 
-                      ? 'bg-primary-600' 
-                      : 'bg-indigo-600'
+                    message.type === 'user' ? 'bg-primary-600' : 'bg-indigo-600'
                   }`}>
                     {message.type === 'user' ? (
                       <User className="h-4 w-4 text-white" />
@@ -130,9 +130,7 @@ const Chatbot = () => {
                 }`}>
                   <p className="text-sm whitespace-pre-line">{message.content}</p>
                   <p className={`text-xs mt-1 ${
-                    message.type === 'user' 
-                      ? 'text-primary-100' 
-                      : 'text-gray-500 dark:text-gray-400'
+                    message.type === 'user' ? 'text-primary-100' : 'text-gray-500 dark:text-gray-400'
                   }`}>
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
