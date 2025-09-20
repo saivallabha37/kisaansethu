@@ -3,7 +3,7 @@ import { Sprout, Send, Loader } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 
-const CropAdvice = () => {
+const CropAdvice = ({ voiceInput }) => {
   const { user } = useAuth();
   const { t } = useLanguage();
 
@@ -27,31 +27,36 @@ const CropAdvice = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [awaitingAnswer, setAwaitingAnswer] = useState(false);
 
-  // First question on mount
+  // --- First question on mount ---
   useEffect(() => {
     setMessages([{ sender: 'bot', text: "What crops can you plant this season?" }]);
     setAwaitingAnswer(true);
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  // --- Automatically submit voice input ---
+  useEffect(() => {
+    if (voiceInput && awaitingAnswer) {
+      handleSubmit(null, voiceInput);
+    }
+  }, [voiceInput]);
+
+  // --- handleSubmit refactored to accept programmatic input ---
+  const handleSubmit = async (e, textInput) => {
+    if (e) e.preventDefault();
+    const answer = textInput ?? input;
+
+    if (!answer.trim()) return;
 
     // Add farmer’s reply
-    setMessages((prev) => [...prev, { sender: 'user', text: input }]);
+    setMessages((prev) => [...prev, { sender: 'user', text: answer }]);
 
     if (awaitingAnswer) {
       const updatedProfile = { ...userProfile };
 
-      if (!updatedProfile.cropPlan) {
-        updatedProfile.cropPlan = input;
-      } else if (currentQuestionIndex === 0) {
-        updatedProfile.lastHarvestTime = input;
-      } else if (currentQuestionIndex === 1) {
-        updatedProfile.previousCrop = input;
-      } else if (currentQuestionIndex === 2) {
-        updatedProfile.chemicalUsage = input;
-      }
+      if (!updatedProfile.cropPlan) updatedProfile.cropPlan = answer;
+      else if (currentQuestionIndex === 0) updatedProfile.lastHarvestTime = answer;
+      else if (currentQuestionIndex === 1) updatedProfile.previousCrop = answer;
+      else if (currentQuestionIndex === 2) updatedProfile.chemicalUsage = answer;
 
       setUserProfile(updatedProfile);
 
@@ -94,7 +99,7 @@ Provide specific, actionable recommendations tailored to Indian conditions.`
       }
     }
 
-    setInput('');
+    setInput(''); // reset input
   };
 
   return (
@@ -117,9 +122,7 @@ Provide specific, actionable recommendations tailored to Indian conditions.`
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex ${
-              msg.sender === 'user' ? 'justify-end' : 'justify-start'
-            }`}
+            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`p-3 rounded-lg max-w-xs ${
@@ -145,19 +148,18 @@ Provide specific, actionable recommendations tailored to Indian conditions.`
       {awaitingAnswer && (
         <form onSubmit={handleSubmit} className="flex space-x-2">
           <textarea
-  value={input}
-  onChange={(e) => setInput(e.target.value)}
-  onKeyDown={(e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // prevent newline
-      handleSubmit(e);    // trigger submit
-    }
-  }}
-  className="input-field h-16 resize-none flex-1"
-  placeholder="Type your answer..."
-  required
-/>
-
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+            className="input-field h-16 resize-none flex-1"
+            placeholder="Type your answer..."
+            required
+          />
           <button
             type="submit"
             disabled={loading}

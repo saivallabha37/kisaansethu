@@ -37,7 +37,7 @@ const MicIcon = ({ isListening }) => (
   </svg>
 );
 
-const VoiceControl = ({ navigate, toggleDarkMode, toggleLanguage }) => {
+const VoiceControl = ({ navigate, toggleDarkMode, toggleLanguage, onVoiceInput }) => {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
@@ -84,9 +84,7 @@ const VoiceControl = ({ navigate, toggleDarkMode, toggleLanguage }) => {
 
     setRecognition(rec);
 
-    return () => {
-      rec.stop();
-    };
+    return () => rec.stop();
   }, []);
 
   const handleVoiceCommand = (command) => {
@@ -108,16 +106,14 @@ const VoiceControl = ({ navigate, toggleDarkMode, toggleLanguage }) => {
       command.startsWith('show ')
     ) {
       const page = command.replace(/^(go to|open|show)\s+/, '');
-      if (pageMap[page]) {
-        navigate(pageMap[page]);
-      }
+      if (pageMap[page]) navigate(pageMap[page]);
     } else if (command.includes('dark mode')) {
       toggleDarkMode();
-    } else if (
-      command.includes('switch language') ||
-      command.includes('change language')
-    ) {
+    } else if (command.includes('switch language') || command.includes('change language')) {
       toggleLanguage();
+    } else {
+      // Pass remaining text as chat input
+      if (onVoiceInput) onVoiceInput(command);
     }
   };
 
@@ -135,17 +131,14 @@ const VoiceControl = ({ navigate, toggleDarkMode, toggleLanguage }) => {
         </div>
       )}
       <button
-  onClick={toggleListening}
-  className={`p-4 rounded-full shadow-lg transition-all transform hover:scale-110 ${
-    isListening
-      ? 'bg-red-100 animate-pulse'
-      : 'bg-blue-900 dark:bg-white'
-  }`}
-  title="Toggle Voice Control"
->
-  <MicIcon isListening={isListening} />
-</button>
-
+        onClick={toggleListening}
+        className={`p-4 rounded-full shadow-lg transition-all transform hover:scale-110 ${
+          isListening ? 'bg-red-100 animate-pulse' : 'bg-blue-900 dark:bg-white'
+        }`}
+        title="Toggle Voice Control"
+      >
+        <MicIcon isListening={isListening} />
+      </button>
     </div>
   );
 };
@@ -157,6 +150,7 @@ function AppContent() {
   const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [appInitialized, setAppInitialized] = useState(false);
+  const [voiceInput, setVoiceInput] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -237,7 +231,7 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/crop-advice" element={<CropAdvice />} />
+            <Route path="/crop-advice" element={<CropAdvice voiceInput={voiceInput} />} />
             <Route path="/weather" element={<Weather />} />
             <Route path="/market-prices" element={<MarketPrices />} />
             <Route path="/learning-hub" element={<LearningHub />} />
@@ -254,6 +248,7 @@ function AppContent() {
         navigate={navigate}
         toggleDarkMode={toggleDarkMode}
         toggleLanguage={toggleLanguage}
+        onVoiceInput={(text) => setVoiceInput(text)}
       />
     </div>
   );
@@ -273,4 +268,3 @@ function App() {
 }
 
 export default App;
-
