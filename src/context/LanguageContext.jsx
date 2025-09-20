@@ -85,6 +85,7 @@ const translations = {
     storeCrops: 'Store crops when prices are low, sell when high',
     joinFarmerGroups: 'Join farmer groups for collective bargaining',
     // Learning Hub
+    learningHubTitle: 'Learning Hub',
     expandKnowledge: 'Expand your farming knowledge with expert content',
     searchArticles: 'Search articles and videos...',
     allTopics: 'All Topics',
@@ -217,6 +218,7 @@ const translations = {
     rainfall: 'वर्षा',
     detailedWeather: 'विस्तृत मौसम और कृषि सिफारिशें',
     unableToLoad: 'मौसम डेटा लोड करने में असमर्थ। कृपया रिफ्रेश करने का प्रयास करें।',
+    learningHubTitle: 'शिक्षण केंद्र',
     // Market Prices
     marketAnalysis: 'बाजार विश्लेषण और सिफारिशें',
     marketTips: 'बाजार सुझाव',
@@ -290,23 +292,194 @@ const translations = {
     perQuintal: 'प्रति क्विंटल',
     minRead: 'मिनट पढ़ें',
     min: 'मिनट'
+  },
+  te: {
+    dashboard: 'డాష్‌బోర్డ్',
+    profile: 'ప్రొఫైల్',
+    cropAdvice: 'పంట సలహాలు',
+    getCropAdvice: 'పంట సలహా పొందండి',
+    weather: 'వాతావరణం',
+    marketPrices: 'మార్కెట్ ధరలు',
+    learningHub: 'లెర్నింగ్ హబ్',
+    chatbot: 'సహాయం',
+    schemeFinder: 'యోజనల శోధకుడు',
+    feedback: 'ఫీడ్‌బ్యాక్',
+    welcomeBack: 'తిరిగి స్వాగతం',
+    weatherForecast: 'వాతావరణ సూచన',
+    weatherUpdate: 'వాతావరణ అప్‌డేట్',
+    recentActivity: 'ఇటీవలి చర్య',
+    temperature: 'ఉష్ణోగ్రత',
+    humidity: 'తేమ',
+    windSpeed: 'గాలి వేగం',
+    rainfall: 'వర్షపాతం',
+    detailedWeather: 'వివరమైన వాతావరణం & వ్యవసాయ సిఫార్సులు',
+    refresh: 'రిఫ్రెష్',
+    menu: 'మెను',
+    weatherAlerts: 'వాతావరణ హెచ్చరికలు',
+    askAiHelper: 'AI సహాయకుడిని అడగండి',
+    aiCropAdvice: 'AI పంట సలహా',
+    learningHub: 'లెర్నింగ్ హబ్',
+    aiFarmingAssistant: 'AI వ్యవసాయ సహాయకుడు',
+    governmentSchemesTitle: 'ప్రభుత్వ యోజనలు',
+    learningHubTitle: 'లెర్నింగ్ హబ్',
+
+  },
+  ta: {
+    dashboard: 'டாஷ்போர்டு',
+    profile: 'சுயவிவரம்',
+    cropAdvice: 'பயிர் ஆலோசனை',
+    getCropAdvice: 'பயிர் ஆலோசனை பெறவும்',
+    weather: 'வானிலை',
+    marketPrices: 'சந்தை விலை',
+    learningHub: 'கற்றல் மையம்',
+    chatbot: 'உதவி',
+    schemeFinder: 'திட்ட தேடல்',
+    feedback: 'கருத்து',
+    welcomeBack: 'மீண்டும் வரவேற்கிறோம்',
+    weatherForecast: 'வானிலை முன்னறிவு',
+    weatherUpdate: 'வானிலை புதுப்பிப்பு',
+    recentActivity: 'சமீபத்திய செயல்கள்',
+    temperature: 'வெப்பநிலை',
+    humidity: 'ஈரப்பதம்',
+    windSpeed: 'காற்றின் வேகம்',
+    rainfall: 'மழை',
+    detailedWeather: 'விவரமான வானிலை & விவசாய பரிந்துரைகள்',
+    refresh: 'புதுப்பிக்க',
+    menu: 'பட்டி',
+    weatherAlerts: 'வானிலை எச்சரிக்கைகள்',
+    askAiHelper: 'AI உதவியாளரை கேளுங்கள்',
+    aiCropAdvice: 'AI பயிர் ஆலோசனை',
+    learningHub: 'கற்றல் மையம்',
+    aiFarmingAssistant: 'AI விவசாய உதவியாளர்',
+    governmentSchemesTitle: 'அரசு திட்டங்கள்',
+    learningHubTitle: 'கற்றல் மையம்',
+
+  },
+  kn: {
+    dashboard: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    profile: 'ಪ್ರೊಫೈಲ್',
+    cropAdvice: 'ಬೆಳೆ ಸಲಹೆ',
+    getCropAdvice: 'ಬೆಳೆ ಸಲಹೆ ಪಡೆಯಿರಿ',
+    weather: 'ಹವಾಮಾನ',
+    marketPrices: 'ಮಾರುಕಟ್ಟೆ ಬೆಲೆ',
+    learningHub: 'ಕಲಿಕಾ ಕೇಂದ್ರ',
+    chatbot: 'ಸಹಾಯ',
+    schemeFinder: 'ಯೋಜನೆ ಹುಡುಕಾಟ',
+    feedback: 'ಅಭಿಪ್ರಾಯ',
+    welcomeBack: 'ಮತ್ತೆ ಸ್ವಾಗತ',
+    weatherForecast: 'ಹವಾಮಾನ ಪೂರ್ವಾನುಮಾನ',
+    weatherUpdate: 'ಹವಾಮಾನ ನವೀಕರಣ',
+    recentActivity: 'ಇತ್ತೀಚಿನ ಕ್ರಿಯೆಗಳು',
+    temperature: 'ತಾಪಮಾನ',
+    humidity: 'ಆರ್ದ್ರತೆ',
+    windSpeed: 'ಗಾಳಿಯ ವೇಗ',
+    rainfall: 'ಮಳೆ',
+    detailedWeather: 'ವಿವರವಾದ ಹವಾಮಾನ ಮತ್ತು ಕೃಷಿ ಶಿಫಾರಸುಗಳು',
+    refresh: 'ರಿಫ್ರೆಶ್',
+    menu: 'ಮೆನು',
+    weatherAlerts: 'ಹವಾಮಾನ ಎಚ್ಚರಿಕೆಗಳು',
+    askAiHelper: 'AI ಸಹಾಯಕರನ್ನು ಕೇಳಿ',
+    aiCropAdvice: 'AI ಬೆಳೆ ಸಲಹೆ',
+    learningHub: 'ಕಲಿಕಾ ಕೇಂದ್ರ',
+    aiFarmingAssistant: 'AI ಕೃಷಿ ಸಹಾಯಕ',
+    governmentSchemesTitle: 'ಸರ್ಕಾರ್ ಯೋಜನೆಗಳು',
+    learningHubTitle: 'ಕಲಿಕಾ ಕೇಂದ್ರ',
+
+  },
+  mr: {
+    dashboard: 'डॅशबोर्ड',
+    profile: 'प्रोफाइल',
+    cropAdvice: 'पीक सल्ला',
+    getCropAdvice: 'पीक सल्ला घ्या',
+    weather: 'हवामान',
+    marketPrices: 'बाजारभाव',
+    learningHub: 'अभ्यास केंद्र',
+    chatbot: 'मदत',
+    schemeFinder: 'योजना शोध',
+    feedback: 'अभिप्राय',
+    welcomeBack: 'पुन्हा स्वागत',
+    weatherForecast: 'हवामान अंदाज',
+    weatherUpdate: 'हवामान अद्यतन',
+    recentActivity: 'अलीकडील क्रियाकलाप',
+    temperature: 'तापमान',
+    humidity: 'आर्द्रता',
+    windSpeed: 'वाऱ्याचा वेग',
+    rainfall: 'पर्जन्य',
+    detailedWeather: 'तपशीलवार हवामान आणि शेती सूचना',
+    refresh: 'रीफ्रेश',
+    menu: 'मेनू',
+    weatherAlerts: 'हवामान इशारे',
+    askAiHelper: 'AI सहाय्यक विचार',
+    aiCropAdvice: 'AI पीक सल्ला',
+    learningHub: 'शिक्षण केंद्र',
+    aiFarmingAssistant: 'AI शेती सहाय्यक',
+    governmentSchemesTitle: 'सरकारी योजना',
+    learningHubTitle: 'अभ्यास केंद्र',
+
+  },
+  pa: {
+    dashboard: 'ਡੈਸ਼ਬੋਰਡ',
+    profile: 'ਪ੍ਰੋਫ਼ਾਈਲ',
+    cropAdvice: 'ਫਸਲ ਸਲਾਹ',
+    weather: 'ਮੌਸਮ',
+    getCropAdvice:'ਫਸਲ ਦੀ ਸਲਾਹ ਪ੍ਰਾਪਤ ਕਰੋ',
+    marketPrices: 'ਬਾਜ਼ਾਰ ਭਾਵ',
+    learningHub: 'ਲਰਨਿੰਗ ਹੱਬ',
+    chatbot: 'ਮਦਦ',
+    schemeFinder: 'ਯੋਜਨਾ ਖੋਜ',
+    feedback: 'ਫੀਡਬੈਕ',
+    welcomeBack: 'ਵਾਪਸੀ ਤੇ ਸੁਆਗਤ',
+    weatherForecast: 'ਮੌਸਮ ਭਵਿੱਖਬਾਣੀ',
+    weatherUpdate: 'ਮੌਸਮ ਅਪਡੇਟ',
+    recentActivity: 'ਤਾਜ਼ਾ ਗਤੀਵਿਧੀਆਂ',
+    temperature: 'ਤਾਪਮਾਨ',
+    humidity: 'ਆਰਦ੍ਰਤਾ',
+    windSpeed: 'ਹਵਾ ਦੀ ਗਤੀ',
+    rainfall: 'ਵਰਖਾ',
+    detailedWeather: 'ਵੇਰਵੇਦਾਰ ਮੌਸਮ ਅਤੇ ਖੇਤੀ ਸਿਫ਼ਾਰਸ਼ਾਂ',
+    refresh: 'ਰਿਫ੍ਰੈਸ਼',
+    menu: 'ਮੇਨੂ',
+    weatherAlerts: 'ਮੌਸਮ ਸੂਚਨਾਵਾਂ',
+    askAiHelper: 'AI ਮਦਦਗਾਰ ਨੂੰ ਪੁੱਛੋ',
+    aiCropAdvice: 'AI ਫਸਲ ਸਲਾਹ',
+    learningHub: 'ਲਰਨਿੰਗ ਹੱਬ',
+    aiFarmingAssistant: 'AI ਖੇਤੀ ਸਹਾਇਕ',
+    governmentSchemesTitle: 'ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ',
+    learningHubTitle: 'ਲਰਨਿੰਗ ਹੱਬ',
+
   }
 };
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState('en');
 
+  const supportedLanguages = [
+    { code: 'en', label: 'English' },
+    { code: 'hi', label: 'हिंदी' },
+    { code: 'te', label: 'తెలుగు' },
+    { code: 'ta', label: 'தமிழ்' },
+    { code: 'kn', label: 'ಕನ್ನಡ' },
+    { code: 'mr', label: 'मराठी' },
+    { code: 'pa', label: 'ਪੰਜਾਬੀ' }
+  ];
+
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'hi' : 'en');
+    const idx = supportedLanguages.findIndex(l => l.code === language);
+    const next = supportedLanguages[(idx + 1) % supportedLanguages.length].code;
+    setLanguage(next);
   };
 
   const t = (key) => {
-    return translations[language][key] || key;
+    return (translations[language] && translations[language][key])
+      || (translations.en && translations.en[key])
+      || key;
   };
 
   const value = {
     language,
     toggleLanguage,
+    setLanguage,
+    supportedLanguages,
     t
   };
 

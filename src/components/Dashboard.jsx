@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Sprout, Cloud, TrendingUp, AlertTriangle, BookOpen, MessageCircle, Languages } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sprout, Cloud, TrendingUp, BookOpen, MessageCircle, Languages } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import Profile from './Profile';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { t, toggleLanguage, language } = useLanguage();
+  const { t, language, setLanguage, supportedLanguages } = useLanguage();
   const [weatherData, setWeatherData] = useState(null);
   const [marketData, setMarketData] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef();
 
   useEffect(() => {
     if (user?.isProfileComplete) {
@@ -16,6 +18,17 @@ const Dashboard = () => {
       fetchMarketData();
     }
   }, [user]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const fetchWeatherData = async () => {
     try {
@@ -59,27 +72,32 @@ const Dashboard = () => {
 
   const fetchMarketData = async () => {
     try {
-      const base = [
-        { name: 'Wheat', unit: '₹/quintal', price: 2250 },
-        { name: 'Rice (Paddy)', unit: '₹/quintal', price: 2100 },
-        { name: 'Cotton', unit: '₹/quintal', price: 6500 },
-        { name: 'Sugarcane', unit: '₹/quintal', price: 330 },
-        { name: 'Maize', unit: '₹/quintal', price: 1950 },
-      ];
+      const res = await fetch(
+        `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=20`
+      );
+      const data = await res.json();
 
-      const withChange = base.map(item => {
-        const changePct = (Math.random() * 2 - 1).toFixed(2);
-        const price = Math.round(item.price * (1 + changePct / 100));
-        return { ...item, price, changePct: Number(changePct) };
-      });
+      if (!data.records || data.records.length === 0) {
+        throw new Error("No records returned");
+      }
+
+      const commodities = data.records.slice(0, 6).map(r => ({
+        name: r.commodity,
+        unit: '₹/quintal',
+        price: Number(r.modal_price),
+        min: Number(r.min_price),
+        max: Number(r.max_price),
+        market: r.market,
+        state: r.state,
+      }));
 
       setMarketData({
         locationLabel: `${user.location}, India`,
         lastUpdate: new Date().toISOString(),
-        commodities: withChange,
+        commodities,
       });
     } catch (error) {
-      console.error('Error preparing market data:', error);
+      console.error('Error fetching mandi prices:', error);
       setMarketData({ error: true });
     }
   };
@@ -106,13 +124,47 @@ const Dashboard = () => {
             {user.location} • {user.farmSize} {t('farmSize').includes('acres') ? 'acres' : 'एकड़'} • {user.soilType} {t('soilType').includes('Soil')}
           </p>
         </div>
-        <button
-          onClick={toggleLanguage}
-          className="flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
-        >
-          <Languages className="h-4 w-4 mr-2" />
-          {language === 'en' ? 'हिंदी में बदलें' : 'Switch to English'}
-        </button>
+
+        {/* Language Dropdown */}
+        <div className="relative inline-block text-left" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+            aria-expanded={dropdownOpen}
+            aria-haspopup="true"
+          >
+            <Languages className="h-4 w-4 mr-2" />
+            {supportedLanguages.find(l => l.code === language)?.label || 'Language'}
+            <svg
+              className="ml-2 -mr-1 h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.584l3.71-4.353a.75.75 0 011.14.976l-4.25 5a.75.75 0 01-1.14 0l-4.25-5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+            </svg>
+          </button>
+
+          {dropdownOpen && (
+            <div className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
+              <div className="py-1">
+                {supportedLanguages.map(lang => (
+                  <button
+                    key={lang.code}
+                    onClick={() => { setLanguage(lang.code); setDropdownOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      lang.code === language ? 'font-semibold bg-gray-200 dark:bg-gray-700' : ''
+                    }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quick Actions */}
@@ -189,16 +241,14 @@ const Dashboard = () => {
                 </div>
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
                   {marketData.commodities.map(item => (
-                    <div key={item.name} className="py-2 flex items-center justify-between">
+                    <div key={item.name + item.market} className="py-2 flex items-center justify-between">
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-300">{item.unit}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-300">{item.market}, {item.state}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">₹{item.price.toLocaleString('en-IN')}</p>
-                        <p className={item.changePct >= 0 ? 'text-xs text-green-600' : 'text-xs text-red-600'}>
-                          {item.changePct >= 0 ? '+' : ''}{item.changePct}%
-                        </p>
+                        <p className="text-xs text-gray-500">Min {item.min} / Max {item.max}</p>
                       </div>
                     </div>
                   ))}
@@ -211,27 +261,6 @@ const Dashboard = () => {
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('recentActivity')}</h2>
-        <div className="space-y-3">
-          <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <AlertTriangle className="h-5 w-5 text-yellow-500 mr-3" />
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{t('weatherAlertsTitle')}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('heavyRainfall')}</p>
-            </div>
-          </div>
-          <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <Sprout className="h-5 w-5 text-green-500 mr-3" />
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{t('cropAdvice')}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('newRecommendations')}</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
